@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Navigation */
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff7e5f, #feb47b);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-button:active {
+            transform: translateY(1px);
+        }
+
+        /* Search styles */
+        .search-container {
+            display: flex;
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 50px 0 0 50px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .search-button {
+            background: linear-gradient(45deg, #ff7e5f, #feb47b);
+            border: none;
+            border-radius: 0 50px 50px 0;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .search-button:hover {
+            background: linear-gradient(45deg, #ff6a45, #ffa45f);
+        }
+
+        .no-results {
+            margin: 2rem 0;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+            cursor: pointer;
+        }
+
+        /* Song Lists */
+        .song-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .song-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.8rem 0;
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+        }
+
+        .song-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .song-item img {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+        }
+
+        .song-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .song-artist-info {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.2rem;
+        }
+
+        /* Player Styles */
+        .player-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .song-info {
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .audio-player audio {
+            width: 100%;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .youtube-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .youtube-link:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .nav-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .music-note {
+            display: inline-block;
+            margin-right: 0.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Visualizer */
+        .visualizer-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 60px;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        
+        .visualizer-bar {
+            width: 4px;
+            margin: 0 2px;
+            background: linear-gradient(to top, #f72585, #4cc9f0);
+            border-radius: 4px;
+            animation: pulse 1.5s ease-in-out infinite;
+            transform-origin: bottom;
+            opacity: 0.7;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scaleY(0.5);
+            }
+            50% {
+                transform: scaleY(1);
+            }
+        }
+        
+        .audio-visualizer.playing .visualizer-bar {
+            animation-duration: 0.5s;
+        }
+
+        /* Floating Notes */
+        .floating-note {
+            position: fixed;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Page sections */
+        .page-section {
+            display: none;
+            width: 100%;
+        }
+
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Page Section -->
+        <div id="home-section" class="page-section active">
+            <h1>
+                <svg class="music-note" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>
+                Music Collection
+            </h1>
+            <p>Choose an artist to explore their songs or search across all songs</p>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search for songs..." class="search-input">
+                <button class="search-button" onclick="searchSongs()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="artist-options">
+                <button class="nav-button" onclick="showArtistSongs('pabitra')">Pabitra's Songs</button>
+                <button class="nav-button" onclick="showArtistSongs('sarmi')">Sarmi's Songs</button>
+                <button class="nav-button" onclick="showAllSongs()">All Songs</button>
+            </div>
+        </div>
+
+        <!-- Songs List Section -->
+        <div id="songs-section" class="page-section">
+            <div class="back-button" onclick="showHomePage()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back to Home
+            </div>
+            
+            <h1>
+                <svg class="music-note" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>
+                <span id="artist-title"></span>'s Songs
+            </h1>
+            
+            <ul id="song-list" class="song-list">
+                <!-- Songs will be loaded here dynamically -->
+            </ul>
+        </div>
+
+        <!-- Player Section -->
+        <div id="player-section" class="page-section">
+            <div class="back-button" onclick="backToSongList()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back to Song List
+            </div>
+            
+            <div class="player-container">
+                <div class="song-info">
+                    <h1>Now Playing</h1>
+                    <h2 id="song-title"></h2>
+                    <p>by <span id="song-artist"></span></p>
+                </div>
+                
+                <div class="audio-visualizer">
+                    <div class="visualizer-container" id="visualizer-container">
+                        <!-- Visualizer bars will be created by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="audio-player">
+                    <audio id="audio-player" controls autoplay>
+                        <source src="#" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                
+                <a id="youtube-link" href="#" target="_blank" class="youtube-link">
+                    Watch on YouTube
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Song data with embedded sample audio URLs (using free sample music)
+        const SONG_DATA = {
+        "pabitra": [
+{
+    "id": "funk-universo",
+    "title": "FUNK UNIVERSO (Slowed)",
+    "artist": "Pabitra",
+    "file": "https://github.com/pabi277/music-host/blob/main/FUNK%20UNIVERSO%20(Slowed).mp3?raw=true",
+    "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+}
+        ],
+        "sarmi": []
+    };
+
+
+
+        // Current state
+        let currentArtist = '';
+
+        // DOM Elements
+        const homeSection = document.getElementById('home-section');
+        const songsSection = document.getElementById('songs-section');
+        const playerSection = document.getElementById('player-section');
+        const artistTitle = document.getElementById('artist-title');
+        const songList = document.getElementById('song-list');
+        const songTitle = document.getElementById('song-title');
+        const songArtist = document.getElementById('song-artist');
+        const audioPlayer = document.getElementById('audio-player');
+        const youtubeLink = document.getElementById('youtube-link');
+        const visualizerContainer = document.getElementById('visualizer-container');
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create floating music notes
+            createMusicNotes();
+            
+            // Create audio visualizer
+            createAudioVisualizer();
+            
+            // Add audio player event listeners
+            audioPlayer.addEventListener('play', updatePlayState);
+            audioPlayer.addEventListener('pause', updatePlayState);
+            audioPlayer.addEventListener('ended', handleSongEnd);
+            
+            // Add enter key listener to search input
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    searchSongs();
+                }
+            });
+        });
+
+        // Navigation Functions
+        function showHomePage() {
+            hideAllSections();
+            homeSection.classList.add('active');
+        }
+
+        function showArtistSongs(artist) {
+            currentArtist = artist;
+            hideAllSections();
+            
+            // Capitalize artist name
+            artistTitle.textContent = artist.charAt(0).toUpperCase() + artist.slice(1);
+            
+            // Clear and populate song list
+            songList.innerHTML = '';
+            SONG_DATA[artist].forEach(song => {
+                const li = document.createElement('li');
+                li.className = 'song-item';
+                li.onclick = () => showPlayer(song);
+                li.innerHTML = `
+                    <div>
+                        <span class="song-title">${song.title}</span>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                    </svg>
+                `;
+                songList.appendChild(li);
+            });
+            
+            songsSection.classList.add('active');
+        }
+
+        function showPlayer(song) {
+            hideAllSections();
+            
+            // Update player information
+            songTitle.textContent = song.title;
+            songArtist.textContent = song.artist;
+            youtubeLink.href = song.youtube;
+            
+            // Set the audio source to the song's file
+            audioPlayer.src = song.file;
+            audioPlayer.play().catch(e => {
+                console.log("Auto-play prevented by browser, user needs to click play button", e);
+            });
+            
+            playerSection.classList.add('active');
+        }
+
+        function backToSongList() {
+            hideAllSections();
+            songsSection.classList.add('active');
+        }
+
+        function hideAllSections() {
+            homeSection.classList.remove('active');
+            songsSection.classList.remove('active');
+            playerSection.classList.remove('active');
+        }
+
+        // Audio Player Functions
+        function updatePlayState() {
+            const visualizer = document.querySelector('.audio-visualizer');
+            
+            if (visualizer) {
+                if (audioPlayer.paused) {
+                    visualizer.classList.remove('playing');
+                } else {
+                    visualizer.classList.add('playing');
+                }
+            }
+        }
+
+        function handleSongEnd() {
+            console.log('Song ended');
+            // Could add functionality like "play next song" here
+        }
+
+        // Search and All Songs functions
+        function searchSongs() {
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm === '') {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            // Get all songs from all artists
+            const allSongs = getAllSongs();
+            
+            // Filter songs based on search term
+            const matchingSongs = allSongs.filter(song => 
+                song.title.toLowerCase().includes(searchTerm) || 
+                song.artist.toLowerCase().includes(searchTerm)
+            );
+            
+            displaySearchResults(matchingSongs, searchTerm);
+        }
+        
+        function getAllSongs() {
+            // Combine all songs from all artists into a single array
+            let allSongs = [];
+            
+            for (const artist in SONG_DATA) {
+                allSongs = allSongs.concat(SONG_DATA[artist]);
+            }
+            
+            return allSongs;
+        }
+        
+        function displaySearchResults(songs, searchTerm) {
+            hideAllSections();
+            currentArtist = 'search';
+            
+            // Set the title
+            artistTitle.textContent = `Search Results for "${searchTerm}"`;
+            
+            // Clear and populate song list
+            songList.innerHTML = '';
+            
+            if (songs.length === 0) {
+                // No results found
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'No songs found matching your search.';
+                songList.appendChild(noResults);
+            } else {
+                // Display results
+                songs.forEach(song => {
+                    const li = document.createElement('li');
+                    li.className = 'song-item';
+                    li.onclick = () => showPlayer(song);
+                    li.innerHTML = `
+                        <div>
+                            <span class="song-title">${song.title}</span>
+                            <div class="song-artist-info">by ${song.artist}</div>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                        </svg>
+                    `;
+                    songList.appendChild(li);
+                });
+            }
+            
+            songsSection.classList.add('active');
+        }
+        
+        function showAllSongs() {
+            const allSongs = getAllSongs();
+            hideAllSections();
+            currentArtist = 'all';
+            
+            // Set the title
+            artistTitle.textContent = 'All';
+            
+            // Clear and populate song list
+            songList.innerHTML = '';
+            
+            allSongs.forEach(song => {
+                const li = document.createElement('li');
+                li.className = 'song-item';
+                li.onclick = () => showPlayer(song);
+                li.innerHTML = `
+                    <div>
+                        <span class="song-title">${song.title}</span>
+                        <div class="song-artist-info">by ${song.artist}</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                    </svg>
+                `;
+                songList.appendChild(li);
+            });
+            
+            songsSection.classList.add('active');
+        }
+
+        function createAudioVisualizer() {
+            // Clear existing bars
+            visualizerContainer.innerHTML = '';
+            
+            // Create bars for visualizer
+            for (let i = 0; i < 20; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'visualizer-bar';
+                bar.style.height = `${Math.random() * 50 + 10}px`;
+                bar.style.animationDelay = `${i * 0.1}s`;
+                visualizerContainer.appendChild(bar);
+            }
+        }
+
+        function createMusicNotes() {
+            const noteCount = 15;
+            
+            for (let i = 0; i < noteCount; i++) {
+                const note = document.createElement('div');
+                note.className = 'floating-note';
+                note.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(255, 255, 255, 0.2)">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
+                    </svg>
+                `;
+                
+                // Random position and animation
+                const size = Math.random() * 30 + 10;
+                note.style.left = `${Math.random() * 100}vw`;
+                note.style.top = `${Math.random() * 100}vh`;
+                note.style.width = `${size}px`;
+                note.style.height = `${size}px`;
+                
+                // Animation properties
+                const duration = Math.random() * 5 + 8;
+                const rotationDuration = Math.random() * 5 + 5;
+                const xMove = Math.random() * 100 - 50;
+                const yMove = Math.random() * 100 - 50;
+                
+                note.style.animation = `float ${duration}s ease-in-out infinite alternate, rotate ${rotationDuration}s linear infinite`;
+                note.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(note);
+            }
+            
+            // Add keyframes dynamically
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0% { transform: translate(0, 0); }
+                    100% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
+                }
+            `;
+            
+            document.head.appendChild(style);
+        }
+    </script>
+    
+</body>
+</html>
